@@ -11,8 +11,8 @@ import (
 	"io"
 	"os"
 
-	"github.com/goccy/go-graphviz/cgraph"
-	"github.com/goccy/go-graphviz/internal/wasm"
+	"github.com/onokonem/go-graphviz/cgraph"
+	"github.com/onokonem/go-graphviz/internal/wasm"
 )
 
 type Context struct {

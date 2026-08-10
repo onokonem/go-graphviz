@@ -1,9 +1,9 @@
-module github.com/goccy/go-graphviz/cmd/dot
+module github.com/onokonem/go-graphviz/cmd/dot
 
 go 1.26.0
 
 require (
-	github.com/goccy/go-graphviz v0.2.5
+	github.com/onokonem/go-graphviz v0.2.5
 	github.com/jessevdk/go-flags v1.6.1
 	golang.org/x/term v0.45.0
 )
@@ -19,4 +19,4 @@ require (
 	golang.org/x/text v0.40.0 // indirect
 )
 
-replace github.com/goccy/go-graphviz => ../..
+replace github.com/onokonem/go-graphviz => ../..

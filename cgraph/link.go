@@ -3,23 +3,23 @@ package cgraph
 import (
 	_ "unsafe"
 
-	"github.com/goccy/go-graphviz/cdt"
-	"github.com/goccy/go-graphviz/internal/wasm"
+	"github.com/onokonem/go-graphviz/cdt"
+	"github.com/onokonem/go-graphviz/internal/wasm"
 )
 
-//go:linkname toDict github.com/goccy/go-graphviz/cdt.toDict
+//go:linkname toDict github.com/onokonem/go-graphviz/cdt.toDict
 func toDict(*wasm.Dict) *cdt.Dict
 
-//go:linkname toDictWasm github.com/goccy/go-graphviz/cdt.toDictWasm
+//go:linkname toDictWasm github.com/onokonem/go-graphviz/cdt.toDictWasm
 func toDictWasm(*cdt.Dict) *wasm.Dict
 
-//go:linkname toDictLink github.com/goccy/go-graphviz/cdt.toLink
+//go:linkname toDictLink github.com/onokonem/go-graphviz/cdt.toLink
 func toDictLink(*wasm.DictLink) *cdt.Link
 
-//go:linkname toDictLinkWasm github.com/goccy/go-graphviz/cdt.toLinkWasm
+//go:linkname toDictLinkWasm github.com/onokonem/go-graphviz/cdt.toLinkWasm
 func toDictLinkWasm(*cdt.Link) *wasm.DictLink
 
-//go:linkname newDict github.com/goccy/go-graphviz/internal/wasm.newDict
+//go:linkname newDict github.com/onokonem/go-graphviz/internal/wasm.newDict
 func newDict(uint64) *wasm.Dict
 
 func toGraphWasm(v *Graph) *wasm.Graph {
