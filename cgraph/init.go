@@ -3,7 +3,7 @@ package cgraph
 import (
 	"context"
 
-	"github.com/goccy/go-graphviz/internal/wasm"
+	"github.com/onokonem/go-graphviz/internal/wasm"
 )
 
 var (

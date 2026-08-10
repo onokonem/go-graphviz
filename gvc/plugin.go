@@ -3,7 +3,7 @@ package gvc
 import (
 	"context"
 
-	"github.com/goccy/go-graphviz/internal/wasm"
+	"github.com/onokonem/go-graphviz/internal/wasm"
 )
 
 type Plugin interface {

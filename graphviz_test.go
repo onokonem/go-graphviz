@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/goccy/go-graphviz"
+	"github.com/onokonem/go-graphviz"
 )
 
 func TestGraphviz_Image(t *testing.T) {

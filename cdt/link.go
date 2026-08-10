@@ -1,7 +1,7 @@
 package cdt
 
 import (
-	"github.com/goccy/go-graphviz/internal/wasm"
+	"github.com/onokonem/go-graphviz/internal/wasm"
 )
 
 func toLinkWasm(v *Link) *wasm.DictLink {

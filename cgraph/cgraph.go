@@ -6,8 +6,8 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/goccy/go-graphviz/cdt"
-	"github.com/goccy/go-graphviz/internal/wasm"
+	"github.com/onokonem/go-graphviz/cdt"
+	"github.com/onokonem/go-graphviz/internal/wasm"
 )
 
 type Graph struct {
