@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"runtime/debug"
 
 	"github.com/jessevdk/go-flags"
 	"github.com/onokonem/go-graphviz"
@@ -15,7 +16,19 @@ import (
 // version is the release version, injected at build time via
 // -ldflags "-X main.version=...". Releases are versioned after the
 // Graphviz library they wrap (see graphviz.version in the repo root).
+// When not injected (e.g. "go install"), the version embedded in the
+// build information is used instead.
 var version = "dev"
+
+func displayVersion() string {
+	if version != "dev" {
+		return version
+	}
+	if bi, ok := debug.ReadBuildInfo(); ok && bi.Main.Version != "" && bi.Main.Version != "(devel)" {
+		return bi.Main.Version
+	}
+	return version
+}
 
 type Option struct {
 	Format     graphviz.Format `description:"specify output format ( currently supported: dot svg png jpg )" short:"T" default:"dot"`
@@ -73,7 +86,7 @@ func main() {
 		return
 	}
 	if opt.Version {
-		fmt.Println(version)
+		fmt.Println(displayVersion())
 		return
 	}
 	if err := _main(context.Background(), args, &opt); err != nil {
