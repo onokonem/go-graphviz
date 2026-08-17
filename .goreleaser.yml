@@ -9,8 +9,7 @@ project_name: go-graphviz
 
 builds:
   - id: dot
-    dir: cmd/dot
-    main: .
+    main: ./cmd/dot
     binary: dot
     env:
       - CGO_ENABLED=0

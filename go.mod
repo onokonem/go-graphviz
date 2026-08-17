@@ -8,8 +8,10 @@ require (
 	github.com/flopp/go-findfont v0.1.0
 	github.com/fogleman/gg v1.3.0
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
+	github.com/jessevdk/go-flags v1.6.1
 	github.com/tetratelabs/wazero v1.12.0
 	golang.org/x/image v0.44.0
+	golang.org/x/term v0.45.0
 )
 
 require (
