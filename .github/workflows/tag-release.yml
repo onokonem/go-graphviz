@@ -1,0 +1,64 @@
+name: Tag Release
+
+# On every push to master, creates the release tag v<graphviz version>
+# (e.g. v15.1.1) and the companion Go module tag (v0.x) if they do not
+# exist yet, so that:
+#   - the Release workflow (triggered by the v* tag) publishes binaries,
+#   - the module can be consumed via go get / go install @latest.
+# Does nothing when the release tag for the current version exists.
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Graphviz version to release; defaults to graphviz.version"
+        required: false
+
+permissions:
+  contents: write
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine versions
+        id: versions
+        run: |
+          set -euo pipefail
+          gv="${{ github.event.inputs.version }}"
+          if [ -z "${gv}" ]; then
+            gv=$(cat graphviz.version)
+          fi
+          echo "gv=${gv}" >> "$GITHUB_OUTPUT"
+          latest_mod=$(git ls-remote --tags origin 'refs/tags/v0.*' | sed 's|.*refs/tags/||' | sort -V | tail -1 || true)
+          if [ -z "${latest_mod}" ]; then
+            latest_mod="v0.0.0"
+          fi
+          minor=$(echo "${latest_mod}" | awk -F. '{print $2}')
+          minor=$((minor + 1))
+          mv="v0.${minor}.0"
+          while git ls-remote --tags origin "refs/tags/${mv}" | grep -q .; do
+            minor=$((minor + 1))
+            mv="v0.${minor}.0"
+          done
+          echo "mv=${mv}" >> "$GITHUB_OUTPUT"
+
+      - name: Create and push tags
+        run: |
+          set -euo pipefail
+          gv="${{ steps.versions.outputs.gv }}"
+          mv="${{ steps.versions.outputs.mv }}"
+          if git ls-remote --tags origin "refs/tags/v${gv}" | grep -q .; then
+            echo "Release tag v${gv} already exists; nothing to do."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag "v${gv}"
+          git tag "${mv}"
+          git push origin "v${gv}" "${mv}"

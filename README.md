@@ -165,7 +165,15 @@ $ dot --version
 15.1.1
 ```
 
-#### Build from source
+#### From source
+
+```bash
+# install the latest released module version (v0.x tag, wraps the same
+# Graphviz release as the binaries above)
+$ go install github.com/onokonem/go-graphviz/cmd/dot@latest
+```
+
+or build from a clone:
 
 ```bash
 $ git clone https://github.com/onokonem/go-graphviz.git

@@ -1,0 +1,89 @@
+name: Update Graphviz
+
+# Regularly checks for a new Graphviz release, rebuilds the embedded
+# wasm and opens a PR that bumps graphviz.version. CI on the PR gates
+# compatibility: if the new Graphviz version broke the bindings, the
+# build/test step fails and the PR stays red for manual review.
+# After the PR is merged, "Tag Release" creates the release tag and the
+# module tag, and the "Release" workflow publishes the binaries.
+on:
+  schedule:
+    - cron: "15 6 * * 1" # every Monday 06:15 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Latest graphviz release
+        id: latest
+        run: |
+          v=$(curl -fsSL https://api.github.com/repos/graphviz/graphviz/releases/latest | jq -r .tag_name | sed 's/^v//')
+          test -n "$v"
+          echo "version=${v}" >> "$GITHUB_OUTPUT"
+
+      - name: Compare with current
+        id: compare
+        run: |
+          cur=$(cat graphviz.version)
+          echo "current=${cur}" >> "$GITHUB_OUTPUT"
+          newest=$(printf '%s\n%s\n' "${cur}" "${{ steps.latest.outputs.version }}" | sort -V | tail -1)
+          if [ "${newest}" = "${cur}" ]; then
+            echo "up_to_date=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "up_to_date=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build graphviz.wasm
+        id: wasm
+        if: steps.compare.outputs.up_to_date == 'false'
+        env:
+          GRAPHVIZ_VERSION: ${{ steps.latest.outputs.version }}
+        run: |
+          docker build ./internal/wasm/build -t graphviz-wasm --build-arg GRAPHVIZ_VERSION="${GRAPHVIZ_VERSION}" | tail -5
+          cid=$(docker create graphviz-wasm)
+          docker cp "${cid}:/work/graphviz.wasm" ./internal/wasm/graphviz.wasm
+          docker rm "${cid}" >/dev/null
+
+      - name: Open issue on build failure
+        if: steps.compare.outputs.up_to_date == 'false' && steps.wasm.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create --title "Failed to build graphviz.wasm for ${{ steps.latest.outputs.version }}" \
+            --body "The automatic update workflow could not build the wasm for Graphviz ${{ steps.latest.outputs.version }}. The Dockerfile or graphviz.patch needs updating for the new version."
+
+      - name: Create update PR
+        if: steps.compare.outputs.up_to_date == 'false' && steps.wasm.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NEW_VERSION: ${{ steps.latest.outputs.version }}
+          CUR_VERSION: ${{ steps.compare.outputs.current }}
+        run: |
+          set -euo pipefail
+          branch="update-graphviz-${NEW_VERSION}"
+          if [ -n "$(gh pr list --head "${branch}" --json number --jq .[])" ]; then
+            echo "PR for ${branch} already exists; nothing to do."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "${branch}"
+          echo "${NEW_VERSION}" > graphviz.version
+          # refresh the concrete version strings in the README examples
+          sed -i "s/v${CUR_VERSION}/v${NEW_VERSION}/g; s/${CUR_VERSION}/${NEW_VERSION}/g" README.md
+          git add graphviz.version internal/wasm/graphviz.wasm README.md
+          git commit -m "Update graphviz to ${NEW_VERSION}"
+          git push -u origin "${branch}"
+          printf 'Automated update of the embedded Graphviz library from %s to %s (changelog: https://gitlab.com/graphviz/graphviz/-/releases).\n\nThis PR bumps `graphviz.version`, rebuilds `internal/wasm/graphviz.wasm` and refreshes the README. The CI build and tests gate compatibility: if the new Graphviz version broke the bindings, the tests fail here and this PR stays red.\n\nAfter merging, the "Tag Release" workflow will create the release tag **v%s** and the companion Go module tag (v0.x) automatically, and the "Release" workflow will publish the dot binaries for all platforms.\n' \
+            "${CUR_VERSION}" "${NEW_VERSION}" "${NEW_VERSION}" > /tmp/pr-body.md
+          gh pr create --title "Update graphviz to ${NEW_VERSION}" --body-file /tmp/pr-body.md

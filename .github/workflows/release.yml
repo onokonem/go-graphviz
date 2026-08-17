@@ -1,9 +1,11 @@
 name: Release
 
+# Runs GoReleaser on release tags vX.Y.Z (X >= 1). The companion module
+# tag v0.x is deliberately excluded so it does not trigger a release.
 on:
   push:
     tags:
-      - "v*"
+      - "v[1-9]*"
 
 permissions:
   contents: write
