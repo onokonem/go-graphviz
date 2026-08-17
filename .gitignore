@@ -7,3 +7,7 @@ bin
 internal/wasm/build/graphviz
 
 .superpowers/
+.claude/
+
+# goreleaser output
+/dist

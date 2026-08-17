@@ -113,10 +113,64 @@ if err := g.RenderFilename(ctx, graph, graphviz.PNG, "/path/to/graph.png"); err 
 
 ## `dot`
 
+`dot` is a standalone command that renders graphs using the Graphviz library embedded in this project. Every [release](https://github.com/onokonem/go-graphviz/releases) is versioned after the Graphviz library it wraps (release `vX.Y.Z` bundles Graphviz `X.Y.Z`, see [`graphviz.version`](./graphviz.version)) and publishes precompiled binaries for macOS, Windows, and Linux on both `amd64` and `arm64`.
+
 ### Installation
 
+#### Precompiled binary (recommended)
+
+Download the archive for your platform from the [latest release](https://github.com/onokonem/go-graphviz/releases/latest), unpack it, and put the binary on your `PATH`.
+
+Each release publishes the following artifacts (replace `<version>` with the Graphviz version wrapped by the release, e.g. `15.1.1` for release `v15.1.1`):
+
+| Platform | Architecture | Archive | Binary |
+| --- | --- | --- | --- |
+| macOS | amd64 | `go-graphviz_<version>_darwin_amd64.tar.gz` | `dot` |
+| macOS | arm64 | `go-graphviz_<version>_darwin_arm64.tar.gz` | `dot` |
+| Linux | amd64 | `go-graphviz_<version>_linux_amd64.tar.gz` | `dot` |
+| Linux | arm64 | `go-graphviz_<version>_linux_arm64.tar.gz` | `dot` |
+| Windows | amd64 | `go-graphviz_<version>_windows_amd64.zip` | `dot.exe` |
+| Windows | arm64 | `go-graphviz_<version>_windows_arm64.zip` | `dot.exe` |
+
+Every archive contains the binary, `README.md`, `LICENSE`, and `graphviz.version`. The `checksums.txt` file with SHA-256 checksums of all artifacts is published alongside them.
+
+**macOS** (example for Apple Silicon; adjust the version in the URLs for the release you are installing):
+
 ```bash
-$ go install github.com/onokonem/go-graphviz/cmd/dot@latest
+curl -LO https://github.com/onokonem/go-graphviz/releases/download/v15.1.1/go-graphviz_15.1.1_darwin_arm64.tar.gz
+tar -xzf go-graphviz_15.1.1_darwin_arm64.tar.gz
+sudo mv dot /usr/local/bin/
+```
+
+**Linux** (example for `amd64`):
+
+```bash
+curl -LO https://github.com/onokonem/go-graphviz/releases/download/v15.1.1/go-graphviz_15.1.1_linux_amd64.tar.gz
+tar -xzf go-graphviz_15.1.1_linux_amd64.tar.gz
+sudo mv dot /usr/local/bin/
+```
+
+**Windows** (PowerShell, example for `amd64`):
+
+```powershell
+Invoke-WebRequest -OutFile dot.zip https://github.com/onokonem/go-graphviz/releases/download/v15.1.1/go-graphviz_15.1.1_windows_amd64.zip
+Expand-Archive dot.zip -DestinationPath dot
+Move-Item dot\dot.exe $env:LOCALAPPDATA\Microsoft\WindowsApps\
+```
+
+Verify the installation:
+
+```bash
+$ dot --version
+15.1.1
+```
+
+#### Build from source
+
+```bash
+$ git clone https://github.com/onokonem/go-graphviz.git
+$ cd go-graphviz/cmd/dot
+$ go build -o dot .
 ```
 
 ### Usage
@@ -126,12 +180,15 @@ Usage:
   dot [OPTIONS]
 
 Application Options:
-  -T=         specify output format ( currently supported: dot svg png jpg ) (default: dot)
-  -K=         specify layout engine ( currently supported: circo dot fdp neato nop nop1 nop2 osage patchwork sfdp twopi )
-  -o=         specify output file name
+  -T=            specify output format ( currently supported: dot svg png jpg )
+                 (default: dot)
+  -K=            specify layout engine ( currently supported: circo dot fdp
+                 neato nop nop1 nop2 osage patchwork sfdp twopi )
+  -o=            specify output file name
+  -v, --version  show version
 
 Help Options:
-  -h, --help  Show this help message
+  -h, --help     Show this help message
 ```
 
 # How it works

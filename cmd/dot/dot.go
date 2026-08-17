@@ -7,15 +7,21 @@ import (
 	"io"
 	"os"
 
-	"github.com/onokonem/go-graphviz"
 	"github.com/jessevdk/go-flags"
+	"github.com/onokonem/go-graphviz"
 	"golang.org/x/term"
 )
+
+// version is the release version, injected at build time via
+// -ldflags "-X main.version=...". Releases are versioned after the
+// Graphviz library they wrap (see graphviz.version in the repo root).
+var version = "dev"
 
 type Option struct {
 	Format     graphviz.Format `description:"specify output format ( currently supported: dot svg png jpg )" short:"T" default:"dot"`
 	Layout     graphviz.Layout `description:"specify layout engine ( currently supported: circo dot fdp neato nop nop1 nop2 osage patchwork sfdp twopi )" short:"K"`
-	OutputFile string          `description:"specify output file name" short:"o" required:"true"`
+	OutputFile string          `description:"specify output file name" short:"o"`
+	Version    bool            `description:"show version" long:"version" short:"v"`
 }
 
 func readGraph(args []string) (*graphviz.Graph, error) {
@@ -34,6 +40,9 @@ func readGraph(args []string) (*graphviz.Graph, error) {
 }
 
 func _main(ctx context.Context, args []string, opt *Option) (e error) {
+	if opt.OutputFile == "" {
+		return errors.New("required flag `-o' was not specified")
+	}
 	graph, err := readGraph(args)
 	if err != nil {
 		return err
@@ -61,6 +70,10 @@ func main() {
 	parser := flags.NewParser(&opt, flags.Default)
 	args, err := parser.Parse()
 	if err != nil {
+		return
+	}
+	if opt.Version {
+		fmt.Println(version)
 		return
 	}
 	if err := _main(context.Background(), args, &opt); err != nil {

@@ -1,0 +1,49 @@
+# Release configuration for the dot command.
+# Releases are versioned after the Graphviz library they wrap:
+# a release tagged vX.Y.Z bundles Graphviz X.Y.Z (see graphviz.version).
+# Run locally with: goreleaser release --clean
+# or push a v* tag and let .github/workflows/release.yml do it.
+version: 2
+
+project_name: go-graphviz
+
+builds:
+  - id: dot
+    dir: cmd/dot
+    main: .
+    binary: dot
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+      - linux
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w -X main.version={{ .Version }}
+
+archives:
+  - id: dot
+    formats:
+      - tar.gz
+    format_overrides:
+      - goos: windows
+        formats:
+          - zip
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - README.md
+      - LICENSE
+      - graphviz.version
+
+checksum:
+  name_template: "checksums.txt"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
