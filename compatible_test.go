@@ -138,8 +138,9 @@ func TestGraphviz_SFDPRepeatedRender(t *testing.T) {
 	// Regression test for the graphviz 15.1.1 wasm build: an upstream
 	// SparseMatrix supernode bug (wrong index in the first-visit guard in
 	// SparseMatrix_decompose_to_supervariables) broke repeated sfdp renders
-	// with heap corruption. Fixed via internal/wasm/build/graphviz.patch,
-	// applied by the Dockerfile build.
+	// with heap corruption. It was carried as internal/wasm/build/graphviz.patch
+	// for the 15.x series and is fixed upstream since 16.1.0; kept to guard
+	// against regressions.
 	ctx := context.Background()
 	g, err := graphviz.New(ctx)
 	if err != nil {

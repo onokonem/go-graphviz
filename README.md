@@ -121,7 +121,7 @@ if err := g.RenderFilename(ctx, graph, graphviz.PNG, "/path/to/graph.png"); err 
 
 Download the archive for your platform from the [latest release](https://github.com/onokonem/go-graphviz/releases/latest), unpack it, and put the binary on your `PATH`.
 
-Each release publishes the following artifacts (replace `<version>` with the Graphviz version wrapped by the release, e.g. `15.1.1` for release `v15.1.1`):
+Each release publishes the following artifacts (replace `<version>` with the Graphviz version wrapped by the release, e.g. `16.1.0` for release `v16.1.0`):
 
 | Platform | Architecture | Archive | Binary |
 | --- | --- | --- | --- |
@@ -137,23 +137,23 @@ Every archive contains the binary, `README.md`, `LICENSE`, and `graphviz.version
 **macOS** (example for Apple Silicon; adjust the version in the URLs for the release you are installing):
 
 ```bash
-curl -LO https://github.com/onokonem/go-graphviz/releases/download/v15.1.1/go-graphviz_15.1.1_darwin_arm64.tar.gz
-tar -xzf go-graphviz_15.1.1_darwin_arm64.tar.gz
+curl -LO https://github.com/onokonem/go-graphviz/releases/download/v16.1.0/go-graphviz_16.1.0_darwin_arm64.tar.gz
+tar -xzf go-graphviz_16.1.0_darwin_arm64.tar.gz
 sudo mv dot /usr/local/bin/
 ```
 
 **Linux** (example for `amd64`):
 
 ```bash
-curl -LO https://github.com/onokonem/go-graphviz/releases/download/v15.1.1/go-graphviz_15.1.1_linux_amd64.tar.gz
-tar -xzf go-graphviz_15.1.1_linux_amd64.tar.gz
+curl -LO https://github.com/onokonem/go-graphviz/releases/download/v16.1.0/go-graphviz_16.1.0_linux_amd64.tar.gz
+tar -xzf go-graphviz_16.1.0_linux_amd64.tar.gz
 sudo mv dot /usr/local/bin/
 ```
 
 **Windows** (PowerShell, example for `amd64`):
 
 ```powershell
-Invoke-WebRequest -OutFile dot.zip https://github.com/onokonem/go-graphviz/releases/download/v15.1.1/go-graphviz_15.1.1_windows_amd64.zip
+Invoke-WebRequest -OutFile dot.zip https://github.com/onokonem/go-graphviz/releases/download/v16.1.0/go-graphviz_16.1.0_windows_amd64.zip
 Expand-Archive dot.zip -DestinationPath dot
 Move-Item dot\dot.exe $env:LOCALAPPDATA\Microsoft\WindowsApps\
 ```
@@ -162,7 +162,7 @@ Verify the installation:
 
 ```bash
 $ dot --version
-15.1.1
+16.1.0
 ```
 
 #### From source

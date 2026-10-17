@@ -27,7 +27,10 @@ jobs:
       - name: Latest graphviz release
         id: latest
         run: |
-          v=$(curl -fsSL https://api.github.com/repos/graphviz/graphviz/releases/latest | jq -r .tag_name | sed 's/^v//')
+          # Graphviz releases are published on GitLab only; the GitHub mirror
+          # no longer carries GitHub Releases, so the api.github.com
+          # releases/latest endpoint 404s.
+          v=$(curl -fsSL "https://gitlab.com/api/v4/projects/graphviz%2Fgraphviz/releases/permalink/latest" | jq -r .tag_name | sed 's/^v//')
           test -n "$v"
           echo "version=${v}" >> "$GITHUB_OUTPUT"
 
@@ -60,7 +63,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh issue create --title "Failed to build graphviz.wasm for ${{ steps.latest.outputs.version }}" \
-            --body "The automatic update workflow could not build the wasm for Graphviz ${{ steps.latest.outputs.version }}. The Dockerfile or graphviz.patch needs updating for the new version."
+            --body "The automatic update workflow could not build the wasm for Graphviz ${{ steps.latest.outputs.version }}. The Dockerfile needs updating for the new version."
 
       - name: Create update PR
         if: steps.compare.outputs.up_to_date == 'false' && steps.wasm.outcome == 'success'

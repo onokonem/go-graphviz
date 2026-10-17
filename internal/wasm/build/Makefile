@@ -9,9 +9,9 @@ TARGET := graphviz.wasm
 # wasi-sdk 24 (clang 18) build (optimizer-exposed UB: all-zero node coordinates,
 # corrupt render output) — hence the previous -O0 requirement. wasi-sdk 33
 # (clang 22) no longer exhibits this, so we build at -Os.
-# NOTE: graphviz 15.x upstream bugs are patched in graphviz.patch (applied by the
-# Dockerfile) — e.g. the SparseMatrix supernode mask fix for the sfdp heap
-# corruption. Keep wasm-opt at -Os; it is not the problem.
+# NOTE: the SparseMatrix supernode mask fix for the sfdp heap corruption was
+# carried as graphviz.patch for the 15.x series; since 16.1.0 it is included
+# upstream and no patch is applied. Keep wasm-opt at -Os; it is not the problem.
 
 build:
 	ccache $(CC) \
