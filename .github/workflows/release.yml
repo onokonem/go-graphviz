@@ -2,10 +2,19 @@ name: Release
 
 # Runs GoReleaser on release tags vX.Y.Z (X >= 1). The companion module
 # tag v0.x is deliberately excluded so it does not trigger a release.
+# Tag pushes made by the Tag Release workflow are authenticated with
+# GITHUB_TOKEN, and GitHub does not start workflows for GITHUB_TOKEN
+# events — so releases created that way must be published via
+# workflow_dispatch with the tag name.
 on:
   push:
     tags:
       - "v[1-9]*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to publish (e.g. v16.1.0)"
+        required: true
 
 permissions:
   contents: write
@@ -19,6 +28,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ inputs.tag || github.ref }}
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
